@@ -69,7 +69,20 @@ class CaptureViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     @IBAction func onSubmit(sender: AnyObject) {
-        UserMedia.postUserImage(imageToUpload.image, withCaption: captionText.text, withCompletion: nil)
+        if imageToUpload.image != nil {
+            UserMedia.postUserImage(imageToUpload.image, withCaption: captionText.text, withCompletion: { (result) -> Void in
+                print("upload successful")
+                let newPost = UserMedia(image: self.imageToUpload.image!, caption: self.captionText.text!, likesCount: 0, commentsCount: 0)
+                
+                self.imageToUpload.image = nil
+                self.captionText.text = nil
+                self.uploadView.hidden = false
+                
+                NSNotificationCenter.defaultCenter().postNotificationName("PostSubmitted", object: nil, userInfo: ["Post" : newPost])
+                
+                self.tabBarController?.selectedIndex = 0
+            })
+        }
     }
 
     /*
